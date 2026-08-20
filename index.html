@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Inquiry Ledger</title>
+<style>
+  :root{
+    --bg:#F1F4F3;
+    --ink:#16323A;
+    --ink-soft:#51686F;
+    --ink-faint:#8FA2A6;
+    --teal:#2F6F76;
+    --teal-bg:#E4EEEE;
+    --gold:#A87A28;
+    --gold-bg:#F3EAD6;
+    --plum:#7C3F5E;
+    --plum-bg:#F1E4EA;
+    --card-bg:#FFFFFF;
+    --border:#DCE3E1;
+    --hot:#B4472C;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);}
+  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
+ 
+  /* header */
+  header.top{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:22px;}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
+  h1{font-family:var(--serif);font-size:34px;margin:4px 0 6px;letter-spacing:-.01em;}
+  .sub{color:var(--ink-soft);font-size:14.5px;max-width:640px;line-height:1.5;margin:0;}
+  .stats{display:flex;gap:22px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
+  .stats b{color:var(--ink);font-size:15px;font-family:var(--sans);display:block;}
+ 
+  /* toolbar */
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px;}
+  input,select{font-family:var(--sans);font-size:13.5px;padding:9px 11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--ink);}
+  input:focus,select:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal);}
+  #search{flex:1;min-width:200px;}
+  .btn{font-family:var(--sans);font-weight:600;font-size:13.5px;padding:9px 16px;border-radius:6px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;white-space:nowrap;}
+  .btn:hover{background:#0d2429;}
+  .btn.ghost{background:transparent;color:var(--ink);}
+  .btn.ghost:hover{background:#e9edec;}
+  .btn:focus-visible, .card:focus-visible, .tag-pill:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
+ 
+  /* grid */
+  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+  .card{position:relative;background:var(--card-bg);border:1.5px solid var(--border);border-radius:8px;padding:18px 16px 16px 30px;cursor:pointer;transition:box-shadow .15s, transform .15s;}
+  .card:hover{box-shadow:0 4px 14px rgba(22,50,58,.10);transform:translateY(-1px);}
+  .tab{position:absolute;left:0;top:14px;bottom:14px;width:9px;border-radius:0 4px 4px 0;}
+  .tab.ebp{background:var(--teal);} .tab.qi{background:var(--gold);} .tab.research{background:var(--plum);}
+  .cat-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;font-weight:600;}
+  .cat-label.ebp{color:var(--teal);background:var(--teal-bg);} .cat-label.qi{color:var(--gold);background:var(--gold-bg);} .cat-label.research{color:var(--plum);background:var(--plum-bg);}
+  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
+  .unit{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
+  .card h3{font-family:var(--serif);font-size:17px;margin:0 0 6px;line-height:1.3;}
+  .card p.desc{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:0 0 10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+  .tag-pill{font-family:var(--mono);font-size:10.5px;background:#EEF1F0;color:var(--ink-soft);padding:2px 7px;border-radius:10px;}
+  .card-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:10px;font-size:12px;}
+  .status-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;}
+  .status-new{background:#EAF1F1;color:var(--teal);} .status-exploring{background:var(--gold-bg);color:var(--gold);} .status-active{background:#E1F0E4;color:#2F7D4F;} .status-completed{background:#EDEDED;color:#666;}
+  .interest{display:flex;align-items:center;gap:6px;color:var(--ink-soft);font-family:var(--mono);}
+  .link-note{font-size:11px;color:var(--hot);margin-top:6px;font-family:var(--mono);}
+  #empty{text-align:center;padding:60px 20px;color:var(--ink-soft);}
+  #empty h3{font-family:var(--serif);color:var(--ink);font-size:20px;}
+ 
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(22,50,58,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;z-index:50;}
+  .modal{background:#fff;border-radius:10px;max-width:560px;width:100%;padding:26px 26px 22px;position:relative;}
+  .modal h2{font-family:var(--serif);margin:6px 0 4px;font-size:23px;}
+  .close-x{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft);}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:4px;color:var(--ink-soft);}
+  .field input,.field textarea,.field select{width:100%;}
+  textarea{font-family:var(--sans);font-size:13.5px;padding:9px 11px;border:1.5px solid var(--border);border-radius:6px;min-height:80px;resize:vertical;}
+  .radio-row{display:flex;gap:10px;}
+  .radio-row label{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--ink);border:1.5px solid var(--border);padding:6px 10px;border-radius:6px;cursor:pointer;}
+  .radio-row input{width:auto;}
+  .interested-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+  .avatar{font-family:var(--mono);font-size:11px;background:var(--teal-bg);color:var(--teal);padding:3px 8px;border-radius:10px;}
+  .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
+  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;}
+  #toast.show{opacity:1;}
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Clinical Inquiry Tri-Chair · Cross-Unit Repository</div>
+    <h1>The Inquiry Ledger</h1>
+    <p class="sub">A shared, searchable log of pain points from staff nurses across the hospital — sorted into Evidence-Based Practice, Quality Improvement, and Research so a curiosity can find its lane, and so a problem flagged on one unit doesn't sit invisible on five others.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+ 
+  <div class="toolbar">
+    <input id="search" type="text" placeholder="Search pain points, tags, units…">
+    <select id="filterCat"><option value="">All categories</option><option value="ebp">EBP</option><option value="qi">QI</option><option value="research">Research</option></select>
+    <select id="filterUnit"><option value="">All units</option></select>
+    <select id="filterStatus"><option value="">All statuses</option><option value="new">New</option><option value="exploring">Being explored</option><option value="active">Active project</option><option value="completed">Completed</option></select>
+    <select id="sortBy"><option value="newest">Newest first</option><option value="interest">Most interest</option></select>
+    <button class="btn" id="openSubmit">+ Log a pain point</button>
+  </div>
+ 
+  <div id="grid"></div>
+  <div id="empty" style="display:none;">
+    <h3>No pain points match that search.</h3>
+    <p>Try clearing a filter, or be the first to log this one.</p>
+  </div>
+</div>
+ 
+<div id="toast"></div>
+ 
+<script>
+const UNITS = ["PICU","NICU","General Pediatrics","Pediatric Oncology","Emergency Department","Med-Surg / Peds Acute","Cardiac Step-Down","Behavioral Health","Perioperative / OR","Ambulatory / Outpatient Clinics"];
+const CAT_LABEL = {ebp:"EBP", qi:"QI", research:"Research"};
+const STATUS_LABEL = {new:"New", exploring:"Being explored", active:"Active project", completed:"Completed"};
+const STORAGE_KEY = "pain-points-v1";
+ 
+const SEED = [
+ {id:"pp1", title:"Alarm fatigue on cardiac monitors", description:"Staff report so many non-actionable monitor alarms per shift that response times to real events are slowing down, and families notice nurses becoming desensitized to beeping.", unit:"PICU", category:"ebp", status:"exploring", tags:["alarm fatigue","monitoring","safety"], submittedBy:"PICU night shift", dateSubmitted:"2026-07-02", interested:["J.M.","K.T."]},
+ {id:"pp2", title:"No standard family education handouts across units", description:"Each unit has built its own discharge and education handouts over the years. Families transferring between units get conflicting instructions on the same topic (e.g., fever thresholds).", unit:"General Pediatrics", category:"qi", status:"new", tags:["family education","discharge","standardization"], submittedBy:"", dateSubmitted:"2026-07-10", interested:["R.P."]},
+ {id:"pp3", title:"Enteral feeding tube placement checks vary by nurse", description:"Verification method before feeds (pH strip vs. auscultation vs. marking) seems to depend on who trained the nurse rather than a shared unit standard.", unit:"NICU", category:"research", status:"new", tags:["enteral feeding","safety","standardization"], submittedBy:"NICU day shift", dateSubmitted:"2026-07-14", interested:[]},
+ {id:"pp4", title:"Central line dressing change practice is inconsistent", description:"Two different chlorhexidine application techniques are being taught on the unit depending on preceptor, and neither is clearly tied to current CLABSI-prevention evidence.", unit:"Pediatric Oncology", category:"ebp", status:"active", tags:["central line","CLABSI","infection prevention"], submittedBy:"", dateSubmitted:"2026-06-20", interested:["A.D.","S.L.","M.C."]},
+ {id:"pp5", title:"Early warning score escalation drops off at shift change", description:"Deteriorating-patient scores are being calculated but the escalation call to the rapid response team is sometimes missed in the handoff window between shifts.", unit:"Med-Surg / Peds Acute", category:"qi", status:"exploring", tags:["early warning score","handoff","escalation"], submittedBy:"C. Nguyen, RN", dateSubmitted:"2026-07-05", interested:["T.B."]},
+ {id:"pp6", title:"Hard to reach current evidence at the bedside", description:"When a question comes up mid-shift, nurses default to asking a colleague rather than searching literature, because there's no fast, trusted point-of-care lookup built into the workflow.", unit:"Emergency Department", category:"ebp", status:"new", tags:["point of care","literature access","workflow"], submittedBy:"", dateSubmitted:"2026-07-16", interested:[]},
+ {id:"pp7", title:"No unit policy on family presence during resuscitation", description:"Practice varies nurse to nurse and physician to physician on whether and how families are offered the option to be present during a code, with no documented decision framework.", unit:"PICU", category:"research", status:"new", tags:["family presence","resuscitation","policy"], submittedBy:"PICU charge nurses", dateSubmitted:"2026-07-18", interested:["J.M."]},
+ {id:"pp8", title:"Pain reassessment timing after PRN meds is inconsistent", description:"Documentation shows wide variation in when pain is reassessed after a PRN dose — sometimes within policy window, often not — with no clear barrier identified yet.", unit:"Pediatric Oncology", category:"qi", status:"new", tags:["pain management","documentation","standardization"], submittedBy:"", dateSubmitted:"2026-07-19", interested:[]}
+];
+ 
+let data = [];
+let filtered = [];
+ 
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200);
+}
+ 
+async function load(){
+  try{
+    const res = await window.storage.get(STORAGE_KEY, true);
+    data = res && res.value ? JSON.parse(res.value) : SEED;
+  }catch(e){
+    data = SEED;
+    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(SEED), true); }catch(e2){}
+  }
+  populateUnitFilter();
+  render();
+}
+ 
+async function save(){
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
+  }catch(e){
+    toast("Couldn't save — your change is visible now but may not persist.");
+  }
+}
+ 
+function populateUnitFilter(){
+  const sel = document.getElementById('filterUnit');
+  const known = new Set(UNITS);
+  data.forEach(d=>known.add(d.unit));
+  [...known].sort().forEach(u=>{
+    const o=document.createElement('option'); o.value=u; o.textContent=u; sel.appendChild(o);
+  });
+}
+ 
+function sharedTagCount(item){
+  let units = new Set();
+  data.forEach(d=>{
+    if(d.id===item.id) return;
+    if(d.tags.some(t=>item.tags.includes(t)) && d.unit!==item.unit) units.add(d.unit);
+  });
+  return units.size;
+}
+ 
+function applyFilters(){
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+  const unit = document.getElementById('filterUnit').value;
+  const status = document.getElementById('filterStatus').value;
+  const sortBy = document.getElementById('sortBy').value;
+ 
+  filtered = data.filter(d=>{
+    if(cat && d.category!==cat) return false;
+    if(unit && d.unit!==unit) return false;
+    if(status && d.status!==status) return false;
+    if(q){
+      const hay = (d.title+" "+d.description+" "+d.unit+" "+d.tags.join(" ")).toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+ 
+  if(sortBy==="interest"){
+    filtered.sort((a,b)=>b.interested.length - a.interested.length);
+  } else {
+    filtered.sort((a,b)=> new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+  }
+}
+ 
+function render(){
+  applyFilters();
+  const grid = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+  grid.innerHTML="";
+  document.getElementById('stats').innerHTML =
+    `<div><b>${data.length}</b>total logged</div>`+
+    `<div><b>${new Set(data.map(d=>d.unit)).size}</b>units represented</div>`+
+    `<div><b>${data.filter(d=>d.status==='active').length}</b>active projects</div>`;
+ 
+  if(filtered.length===0){ empty.style.display='block'; return; }
+  empty.style.display='none';
+ 
+  filtered.forEach(item=>{
+    const shared = sharedTagCount(item);
+    const card = document.createElement('div');
+    card.className='card'; card.tabIndex=0; card.setAttribute('role','button');
+    card.innerHTML = `
+      <div class="tab ${item.category}"></div>
+      <div class="card-top">
+        <span class="cat-label ${item.category}">${CAT_LABEL[item.category]}</span>
+        <span class="unit">${item.unit}</span>
+      </div>
+      <h3>${escapeHtml(item.title)}</h3>
+      <p class="desc">${escapeHtml(item.description)}</p>
+      <div class="tags">${item.tags.map(t=>`<span class="tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+      <div class="card-bottom">
+        <span class="status-badge status-${item.status}">${STATUS_LABEL[item.status]}</span>
+        <span class="interest">★ ${item.interested.length} interested</span>
+      </div>
+      ${shared>0 ? `<div class="link-note">🔗 similar pain point flagged on ${shared} other unit${shared>1?'s':''}</div>` : ''}
+    `;
+    card.addEventListener('click', ()=>openDetail(item.id));
+    card.addEventListener('keypress', e=>{ if(e.key==='Enter') openDetail(item.id); });
+    grid.appendChild(card);
+  });
+}
+ 
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+ 
+function openDetail(id){
+  const item = data.find(d=>d.id===id);
+  const overlay = document.createElement('div');
+  overlay.className='overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <button class="close-x" aria-label="Close">✕</button>
+      <span class="cat-label ${item.category}">${CAT_LABEL[item.category]}</span>
+      <h2>${escapeHtml(item.title)}</h2>
+      <div class="unit">${item.unit} · logged ${item.dateSubmitted}${item.submittedBy? ' · '+escapeHtml(item.submittedBy):''}</div>
+      <p style="line-height:1.6;font-size:14px;margin-top:14px;">${escapeHtml(item.description)}</p>
+      <div class="tags">${item.tags.map(t=>`<span class="tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
+      <div class="field" style="margin-top:16px;">
+        <label>Status</label>
+        <select id="statusEdit">
+          ${Object.entries(STATUS_LABEL).map(([k,v])=>`<option value="${k}" ${k===item.status?'selected':''}>${v}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field">
+        <label>Who's interested in collaborating (${item.interested.length})</label>
+        <div class="interested-list">${item.interested.map(n=>`<span class="avatar">${escapeHtml(n)}</span>`).join('') || '<span style="color:var(--ink-faint);font-size:12.5px;">No one yet — be the first.</span>'}</div>
+      </div>
+      <div class="form-actions">
+        <input id="joinName" placeholder="Your initials or unit" style="max-width:180px;">
+        <button class="btn" id="joinBtn">I'm interested</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
+  overlay.querySelector('#statusEdit').addEventListener('change', async e=>{
+    item.status = e.target.value; await save(); render(); toast("Status updated.");
+  });
+  overlay.querySelector('#joinBtn').addEventListener('click', async ()=>{
+    const name = overlay.querySelector('#joinName').value.trim() || 'Anonymous';
+    item.interested.push(name);
+    await save();
+    overlay.remove();
+    render();
+    toast("Added — thanks for raising your hand.");
+  });
+}
+ 
+function openSubmitForm(){
+  const overlay = document.createElement('div');
+  overlay.className='overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <button class="close-x" aria-label="Close">✕</button>
+      <h2>Log a pain point</h2>
+      <p style="color:var(--ink-soft);font-size:13px;margin-top:-4px;">A recurring frustration, a "why do we do it this way," a question you'd chase if you had time. That's it — no proposal needed yet.</p>
+      <div class="field"><label>What's the pain point?</label><input id="f-title" placeholder="e.g. Inconsistent bedside handoff format"></div>
+      <div class="field"><label>Tell us more</label><textarea id="f-desc" placeholder="What's happening, how often, what you've noticed…"></textarea></div>
+      <div class="field"><label>Your unit</label>
+        <select id="f-unit">${UNITS.map(u=>`<option value="${u}">${u}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Which lane does this feel like?</label>
+        <div class="radio-row">
+          <label><input type="radio" name="cat" value="ebp" checked> EBP</label>
+          <label><input type="radio" name="cat" value="qi"> QI</label>
+          <label><input type="radio" name="cat" value="research"> Research</label>
+        </div>
+      </div>
+      <div class="field"><label>Tags (comma separated)</label><input id="f-tags" placeholder="e.g. handoff, documentation, safety"></div>
+      <div class="field"><label>Your name / unit (optional)</label><input id="f-name" placeholder="Leave blank to stay anonymous"></div>
+      <div class="form-actions">
+        <button class="btn ghost" id="cancelBtn">Cancel</button>
+        <button class="btn" id="submitBtn">Add to the ledger</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
+  overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
+  overlay.querySelector('#cancelBtn').addEventListener('click', ()=>overlay.remove());
+  overlay.querySelector('#submitBtn').addEventListener('click', async ()=>{
+    const title = overlay.querySelector('#f-title').value.trim();
+    if(!title){ toast("Give it a short title first."); return; }
+    const desc = overlay.querySelector('#f-desc').value.trim();
+    const unit = overlay.querySelector('#f-unit').value;
+    const cat = overlay.querySelector('input[name="cat"]:checked').value;
+    const tags = overlay.querySelector('#f-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const name = overlay.querySelector('#f-name').value.trim();
+    const newItem = {
+      id: 'pp'+Date.now(),
+      title, description: desc || "No further detail added yet.",
+      unit, category: cat, status: 'new', tags,
+      submittedBy: name, dateSubmitted: new Date().toISOString().slice(0,10),
+      interested: []
+    };
+    data.unshift(newItem);
+    await save();
+    populateUnitFilter();
+    overlay.remove();
+    render();
+    toast("Added to the ledger.");
+  });
+}
+ 
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('filterCat').addEventListener('change', render);
+document.getElementById('filterUnit').addEventListener('change', render);
+document.getElementById('filterStatus').addEventListener('change', render);
+document.getElementById('sortBy').addEventListener('change', render);
+document.getElementById('openSubmit').addEventListener('click', openSubmitForm);
+ 
+load();
+</script>
+</body>
+</html>
