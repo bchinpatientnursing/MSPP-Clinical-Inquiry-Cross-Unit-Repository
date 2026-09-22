@@ -2,357 +2,993 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>The Inquiry Ledger</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Inquiry Ledger · MSPP Clinical Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#F1F4F3;
-    --ink:#16323A;
-    --ink-soft:#51686F;
-    --ink-faint:#8FA2A6;
-    --teal:#2F6F76;
-    --teal-bg:#E4EEEE;
-    --gold:#A87A28;
-    --gold-bg:#F3EAD6;
-    --plum:#7C3F5E;
-    --plum-bg:#F1E4EA;
-    --card-bg:#FFFFFF;
-    --border:#DCE3E1;
-    --hot:#B4472C;
-    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  :root {
+    /* Engaging Medical-Tech Palette */
+    --bg-page: #F0F4F8;
+    --card-bg: #FFFFFF;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-faint: #94A3B8;
+    
+    --brand-teal: #0284C7;
+    --brand-teal-light: #E0F2FE;
+    --brand-coral: #F43F5E;
+    --brand-coral-light: #FFE4E6;
+    --brand-gold: #D97706;
+    --brand-gold-light: #FEF3C7;
+    --brand-purple: #7C3AED;
+    --brand-purple-light: #F3E8FF;
+    
+    --ebp-color: #0284C7;
+    --ebp-bg: #E0F2FE;
+    --qi-color: #D97706;
+    --qi-bg: #FEF3C7;
+    --research-color: #7C3AED;
+    --research-bg: #F3E8FF;
+    
+    --border-color: #E2E8F0;
+    --border-focus: #38BDF8;
+    --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+    --shadow-float: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
+    
+    --font-heading: 'Outfit', -apple-system, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);}
-  .wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
- 
-  /* header */
-  header.top{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:22px;}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);}
-  h1{font-family:var(--serif);font-size:34px;margin:4px 0 6px;letter-spacing:-.01em;}
-  .sub{color:var(--ink-soft);font-size:14.5px;max-width:640px;line-height:1.5;margin:0;}
-  .stats{display:flex;gap:22px;margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--ink-soft);}
-  .stats b{color:var(--ink);font-size:15px;font-family:var(--sans);display:block;}
- 
-  /* toolbar */
-  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:20px;}
-  input,select{font-family:var(--sans);font-size:13.5px;padding:9px 11px;border:1.5px solid var(--border);border-radius:6px;background:#fff;color:var(--ink);}
-  input:focus,select:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal);}
-  #search{flex:1;min-width:200px;}
-  .btn{font-family:var(--sans);font-weight:600;font-size:13.5px;padding:9px 16px;border-radius:6px;border:1.5px solid var(--ink);background:var(--ink);color:#fff;cursor:pointer;white-space:nowrap;}
-  .btn:hover{background:#0d2429;}
-  .btn.ghost{background:transparent;color:var(--ink);}
-  .btn.ghost:hover{background:#e9edec;}
-  .btn:focus-visible, .card:focus-visible, .tag-pill:focus-visible{outline:2px solid var(--teal);outline-offset:2px;}
- 
-  /* grid */
-  #grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
-  .card{position:relative;background:var(--card-bg);border:1.5px solid var(--border);border-radius:8px;padding:18px 16px 16px 30px;cursor:pointer;transition:box-shadow .15s, transform .15s;}
-  .card:hover{box-shadow:0 4px 14px rgba(22,50,58,.10);transform:translateY(-1px);}
-  .tab{position:absolute;left:0;top:14px;bottom:14px;width:9px;border-radius:0 4px 4px 0;}
-  .tab.ebp{background:var(--teal);} .tab.qi{background:var(--gold);} .tab.research{background:var(--plum);}
-  .cat-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:3px;font-weight:600;}
-  .cat-label.ebp{color:var(--teal);background:var(--teal-bg);} .cat-label.qi{color:var(--gold);background:var(--gold-bg);} .cat-label.research{color:var(--plum);background:var(--plum-bg);}
-  .card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px;}
-  .unit{font-family:var(--mono);font-size:11px;color:var(--ink-faint);}
-  .card h3{font-family:var(--serif);font-size:17px;margin:0 0 6px;line-height:1.3;}
-  .card p.desc{font-size:13px;color:var(--ink-soft);line-height:1.5;margin:0 0 10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-  .tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
-  .tag-pill{font-family:var(--mono);font-size:10.5px;background:#EEF1F0;color:var(--ink-soft);padding:2px 7px;border-radius:10px;}
-  .card-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:10px;font-size:12px;}
-  .status-badge{font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;}
-  .status-new{background:#EAF1F1;color:var(--teal);} .status-exploring{background:var(--gold-bg);color:var(--gold);} .status-active{background:#E1F0E4;color:#2F7D4F;} .status-completed{background:#EDEDED;color:#666;}
-  .interest{display:flex;align-items:center;gap:6px;color:var(--ink-soft);font-family:var(--mono);}
-  .link-note{font-size:11px;color:var(--hot);margin-top:6px;font-family:var(--mono);}
-  #empty{text-align:center;padding:60px 20px;color:var(--ink-soft);}
-  #empty h3{font-family:var(--serif);color:var(--ink);font-size:20px;}
- 
-  /* modal */
-  .overlay{position:fixed;inset:0;background:rgba(22,50,58,.45);display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;z-index:50;}
-  .modal{background:#fff;border-radius:10px;max-width:560px;width:100%;padding:26px 26px 22px;position:relative;}
-  .modal h2{font-family:var(--serif);margin:6px 0 4px;font-size:23px;}
-  .close-x{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink-soft);}
-  .field{margin-bottom:14px;}
-  .field label{display:block;font-size:12.5px;font-weight:600;margin-bottom:4px;color:var(--ink-soft);}
-  .field input,.field textarea,.field select{width:100%;}
-  textarea{font-family:var(--sans);font-size:13.5px;padding:9px 11px;border:1.5px solid var(--border);border-radius:6px;min-height:80px;resize:vertical;}
-  .radio-row{display:flex;gap:10px;}
-  .radio-row label{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:500;color:var(--ink);border:1.5px solid var(--border);padding:6px 10px;border-radius:6px;cursor:pointer;}
-  .radio-row input{width:auto;}
-  .interested-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
-  .avatar{font-family:var(--mono);font-size:11px;background:var(--teal-bg);color:var(--teal);padding:3px 8px;border-radius:10px;}
-  .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;}
-  #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:100;}
-  #toast.show{opacity:1;}
-  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    padding: 0 0 90px 0;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  /* Sticky Top Header */
+  header.app-header {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 12px 20px;
+  }
+
+  .header-content {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand-block h1 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(135deg, #0F172A 0%, #0284C7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+
+  .brand-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+  }
+
+  /* Metrics Pills */
+  .metrics-strip {
+    max-width: 900px;
+    margin: 16px auto 0 auto;
+    padding: 0 20px;
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .metrics-strip::-webkit-scrollbar { display: none; }
+
+  .metric-badge {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+
+  .metric-badge b {
+    font-family: var(--font-mono);
+    color: var(--brand-teal);
+    font-size: 14px;
+  }
+
+  .metric-badge span {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  /* Mobile Views Container */
+  .container {
+    max-width: 900px;
+    margin: 16px auto 0 auto;
+    padding: 0 20px;
+  }
+
+  /* Search & Filter Controls */
+  .controls-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-input-wrapper {
+    position: relative;
+  }
+
+  .search-input-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 38px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: #F8FAFC;
+    color: var(--text-primary);
+    transition: all 0.2s;
+  }
+
+  .search-input-wrapper input:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    background: #FFF;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.5;
+  }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+
+  .filter-row select {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    background: #FFF;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+  }
+
+  /* Feed Grid */
+  .grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+    display: flex;
+    gap: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .card:active {
+    transform: scale(0.99);
+  }
+
+  /* Upvote Pillar */
+  .upvote-pillar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #F8FAFC;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 8px 6px;
+    min-width: 46px;
+    height: fit-content;
+  }
+
+  .upvote-btn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    transition: transform 0.15s;
+  }
+
+  .upvote-btn:active {
+    transform: scale(1.3);
+  }
+
+  .upvote-btn.active {
+    color: var(--brand-coral);
+  }
+
+  .upvote-count {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-top: 4px;
+  }
+
+  .upvote-count.active {
+    color: var(--brand-coral);
+  }
+
+  /* Card Details */
+  .card-main {
+    flex: 1;
+  }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .lane-pill {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .lane-pill.ebp { background: var(--ebp-bg); color: var(--ebp-color); }
+  .lane-pill.qi { background: var(--qi-bg); color: var(--qi-color); }
+  .lane-pill.research { background: var(--research-bg); color: var(--research-color); }
+
+  .unit-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+
+  .card h3 {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 6px 0;
+    color: var(--text-primary);
+    line-height: 1.35;
+  }
+
+  .card p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin: 0 0 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .squad-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 10px;
+    margin-top: 8px;
+  }
+
+  .squad-avatars {
+    display: flex;
+    align-items: center;
+  }
+
+  .avatar-bubble {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    color: #FFF;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #FFF;
+    margin-left: -6px;
+  }
+
+  .avatar-bubble:first-child { margin-left: 0; }
+
+  .join-squad-btn {
+    background: var(--brand-teal-light);
+    color: var(--brand-teal);
+    border: none;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .join-squad-btn:active {
+    background: var(--brand-teal);
+    color: #FFF;
+  }
+
+  /* Bottom Navigation Bar */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 12px 0;
+    z-index: 1000;
+  }
+
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 10px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    width: 25%;
+  }
+
+  .nav-item.active {
+    color: var(--brand-teal);
+  }
+
+  .nav-item span.icon {
+    font-size: 18px;
+  }
+
+  /* FAB Log Button */
+  .fab-button {
+    position: fixed;
+    bottom: 75px;
+    right: 20px;
+    background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+    color: #FFF;
+    border: none;
+    border-radius: 30px;
+    padding: 12px 20px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: var(--shadow-float);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 900;
+    cursor: pointer;
+  }
+
+  /* Bottom Sheet Modal */
+  .sheet-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .sheet-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sheet-modal {
+    background: #FFF;
+    width: 100%;
+    max-width: 600px;
+    border-radius: 24px 24px 0 0;
+    padding: 24px 20px 40px 20px;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sheet-overlay.active .sheet-modal {
+    transform: translateY(0);
+  }
+
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    margin: 0 auto 16px auto;
+  }
+
+  .sheet-title {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    background: #F8FAFC;
+  }
+
+  .form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn-submit {
+    flex: 1;
+    background: var(--brand-teal);
+    color: #FFF;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  /* Toast Notification */
+  #toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50px);
+    background: #0F172A;
+    color: #FFF;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--shadow-float);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 3000;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header class="top">
-    <div class="eyebrow">MSPP Clinical Inquiry Tri-Chair · Cross-Unit Repository</div>
-    <h1>The Inquiry Ledger</h1>
-    <p class="sub">A shared, searchable log of pain points from staff nurses across the Medical, Surgical, and Procedural Nursing Program sorted into Evidence-Based Practice, Quality Improvement, and Research so a curiosity can find its lane, and so a problem flagged on one unit doesn't sit invisible on five others.</p>
-    <div class="stats" id="stats"></div>
-  </header>
- 
-  <div class="toolbar">
-    <input id="search" type="text" placeholder="Search pain points, tags, units…">
-    <select id="filterCat"><option value="">All categories</option><option value="ebp">EBP</option><option value="qi">QI</option><option value="research">Research</option></select>
-    <select id="filterUnit"><option value="">All units</option></select>
-    <select id="filterStatus"><option value="">All statuses</option><option value="new">New</option><option value="exploring">Being explored</option><option value="active">Active project</option><option value="completed">Completed</option></select>
-    <select id="sortBy"><option value="newest">Newest first</option><option value="interest">Most interest</option></select>
-    <button class="btn" id="openSubmit">+ Log a pain point</button>
+
+<!-- Header -->
+<header class="app-header">
+  <div class="header-content">
+    <div class="brand-block">
+      <div class="brand-sub">MSPP Clinical Innovation</div>
+      <h1>The Inquiry Ledger</h1>
+    </div>
   </div>
- 
-  <div id="grid"></div>
-  <div id="empty" style="display:none;">
-    <h3>No pain points match that search.</h3>
-    <p>Try clearing a filter, or be the first to log this one.</p>
+</header>
+
+<!-- Dynamic Metric Strip -->
+<div class="metrics-strip" id="metricStrip">
+  <!-- Injected via JS -->
+</div>
+
+<!-- Main Feed Container -->
+<div class="container">
+  <!-- Search and Filters -->
+  <div class="controls-card">
+    <div class="search-input-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search pain points, units, equipment...">
+    </div>
+    <div class="filter-row">
+      <select id="filterLane">
+        <option value="">All Lanes (EBP/QI/Research)</option>
+        <option value="ebp">EBP</option>
+        <option value="qi">QI</option>
+        <option value="research">Research</option>
+      </select>
+      <select id="filterUnit">
+        <option value="">All Units</option>
+      </select>
+      <select id="sortBy">
+        <option value="votes">🔥 Most Upvoted</option>
+        <option value="newest">🕒 Fresh Items</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Cards Grid -->
+  <div class="grid" id="cardGrid"></div>
+</div>
+
+<!-- Floating Action Button -->
+<button class="fab-button" id="openLogBtn">
+  <span>⚡</span>
+  <span>Log Pain Point</span>
+</button>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="switchTab('feed')">
+    <span class="icon">💡</span>
+    <span>Inquiries</span>
+  </button>
+  <button class="nav-item" onclick="switchTab('squads')">
+    <span class="icon">🤝</span>
+    <span>Squads</span>
+  </button>
+  <button class="nav-item" onclick="exportRepositoryJSON()">
+    <span class="icon">📦</span>
+    <span>Export Repo</span>
+  </button>
+</nav>
+
+<!-- Modal Bottom Sheet -->
+<div class="sheet-overlay" id="modalOverlay">
+  <div class="sheet-modal" id="modalContent">
+    <div class="sheet-handle"></div>
+    <div id="modalInnerBody"></div>
   </div>
 </div>
- 
+
 <div id="toast"></div>
- 
+
 <script>
-const UNITS = ["7 Mandell","9 Mandell","Inpatient Diabetes","PIMCU","8 Mandell","10 Hale","GPU"];
-const CAT_LABEL = {ebp:"EBP", qi:"QI", research:"Research"};
-const STATUS_LABEL = {new:"New", exploring:"Being explored", active:"Active project", completed:"Completed"};
-const STORAGE_KEY = "pain-points-v1";
- 
-const SEED = [
- {id:"pp1", title:"Alarm fatigue on cardiac monitors", description:"Staff report so many non-actionable monitor alarms per shift that response times to real events are slowing down, and families notice nurses becoming desensitized to beeping.", unit:"PIMCU", category:"ebp", status:"exploring", tags:["alarm fatigue","monitoring","safety"], submittedBy:"PICU night shift", dateSubmitted:"2026-07-02", interested:["J.M.","K.T."]},
- {id:"pp2", title:"No standard family education handouts across units", description:"Each unit has built its own discharge and education handouts over the years. Families transferring between units get conflicting instructions on the same topic (e.g., fever thresholds).", unit:"7 Mandell", category:"qi", status:"new", tags:["family education","discharge","standardization"], submittedBy:"", dateSubmitted:"2026-07-10", interested:["R.P."]},
- {id:"pp3", title:"Enteral feeding tube placement checks vary by nurse", description:"Verification method before feeds (pH strip vs. auscultation vs. marking) seems to depend on who trained the nurse rather than a shared unit standard.", unit:"10 Hale", category:"research", status:"new", tags:["enteral feeding","safety","standardization"], submittedBy:"NICU day shift", dateSubmitted:"2026-07-14", interested:[]},
- {id:"pp4", title:"Central line dressing change practice is inconsistent", description:"Two different chlorhexidine application techniques are being taught on the unit depending on preceptor, and neither is clearly tied to current CLABSI-prevention evidence.", unit:"9 Mandell", category:"ebp", status:"active", tags:["central line","CLABSI","infection prevention"], submittedBy:"", dateSubmitted:"2026-06-20", interested:["A.D.","S.L.","M.C."]},
- {id:"pp5", title:"Early warning score escalation drops off at shift change", description:"Deteriorating-patient scores are being calculated but the escalation call to the rapid response team is sometimes missed in the handoff window between shifts.", unit:"PIMCU", category:"qi", status:"exploring", tags:["early warning score","handoff","escalation"], submittedBy:"C. Nguyen, RN", dateSubmitted:"2026-07-05", interested:["T.B."]},
- {id:"pp6", title:"Hard to reach current evidence at the bedside", description:"When a question comes up mid-shift, nurses default to asking a colleague rather than searching literature, because there's no fast, trusted point-of-care lookup built into the workflow.", unit:"Dialysis", category:"ebp", status:"new", tags:["point of care","literature access","workflow"], submittedBy:"", dateSubmitted:"2026-07-16", interested:[]},
- {id:"pp7", title:"No unit policy on family presence during resuscitation", description:"Practice varies nurse to nurse and physician to physician on whether and how families are offered the option to be present during a code, with no documented decision framework.", unit:"PIMCU", category:"research", status:"new", tags:["family presence","resuscitation","policy"], submittedBy:"PICU charge nurses", dateSubmitted:"2026-07-18", interested:["J.M."]},
- {id:"pp8", title:"Pain reassessment timing after PRN meds is inconsistent", description:"Documentation shows wide variation in when pain is reassessed after a PRN dose, sometimes within policy window, often not, with no clear barrier identified yet.", unit:"10 Hale", category:"qi", status:"new", tags:["pain management","documentation","standardization"], submittedBy:"", dateSubmitted:"2026-07-19", interested:[]}
-];
- 
-let data = [];
-let filtered = [];
- 
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'),2200);
-}
- 
-async function load(){
-  try{
-    const res = await window.storage.get(STORAGE_KEY, true);
-    data = res && res.value ? JSON.parse(res.value) : SEED;
-  }catch(e){
-    data = SEED;
-    try{ await window.storage.set(STORAGE_KEY, JSON.stringify(SEED), true); }catch(e2){}
+const UNITS = ["7 Mandell", "9 Mandell", "10 Hale", "PIMCU", "Inpatient Diabetes", "GPU", "Dialysis", "Interventional Radiology"];
+const LANES = { ebp: "EBP", qi: "QI", research: "Research" };
+const STORAGE_KEY = "mspp_ledger_morning_data_v1";
+const USER_VOTES_KEY = "mspp_ledger_user_votes_v1";
+
+// 7 Captured Morning Pain Points
+const MORNING_PAIN_POINTS = [
+  {
+    id: "pp101",
+    title: "Clinical training for night secretarial staff to offer cuddle support",
+    description: "Can the nighttime PER / unit secretary receive targeted clinical or developmental training so they can cuddle Department of Child Protective Services or unaccompanied infants in need of comfort?",
+    unit: "PIMCU",
+    category: "qi",
+    tags: ["infant care", "night shift", "patient comfort", "CPS"],
+    votes: 19,
+    dateSubmitted: "2026-09-22",
+    squad: ["M. R., RN", "K. D., RN", "C. T., PER"]
+  },
+  {
+    id: "pp102",
+    title: "Post-COVID volunteer support deficit at the bedside",
+    description: "Following post-COVID restrictions, volunteer presence at the bedside has significantly decreased. There is an urgent need to re-engage and increase volunteer support for pediatric patient holding and play.",
+    unit: "7 Mandell",
+    category: "qi",
+    tags: ["volunteers", "staff support", "pediatric care"],
+    votes: 14,
+    dateSubmitted: "2026-09-22",
+    squad: ["S. L., RN"]
+  },
+  {
+    id: "pp103",
+    title: "Lack of NAT racks / IV transport mounts on hospital beds",
+    description: "Nurses face severe ergonomics and safety risks during transport due to a lack of NAT racks on beds or proper IV transport mounts. Staff are carrying too equipment manually while steering beds.",
+    unit: "10 Hale",
+    category: "ebp",
+    tags: ["transport", "ergonomics", "IV safety", "equipment"],
+    votes: 28,
+    dateSubmitted: "2026-09-22",
+    squad: ["J. M., RN", "A. B., Transport"]
+  },
+  {
+    id: "pp104",
+    title: "10th floor ramp requires extra staffing during IR transport",
+    description: "Transporting pediatric patients down the 10th floor ramp to Interventional Radiology requires multiple staff members due to steep incline and bed weight, creating heavy unit strain and bottlenecking.",
+    unit: "10 Hale",
+    category: "qi",
+    tags: ["transport", "Interventional Radiology", "staffing", "safety"],
+    votes: 22,
+    dateSubmitted: "2026-09-22",
+    squad: ["R. P., RN", "T. G., IR"]
+  },
+  {
+    id: "pp105",
+    title: "Behavioral health room safety standards & complex patient needs",
+    description: "Behavioral health rooms must be bare and spare for safety. Are the newly improved rooms truly meeting standard-of-care requirements for complex pediatric behavioral health patients at risk?",
+    unit: "9 Mandell",
+    category: "research",
+    tags: ["behavioral health", "room safety", "complex care"],
+    votes: 17,
+    dateSubmitted: "2026-09-22",
+    squad: ["K. T., CNS", "E. H., RN"]
+  },
+  {
+    id: "pp106",
+    title: "Lack of standard phone charging equipment on Stryker & Hill-Rom beds",
+    description: "Do standard Hill-Rom and Stryker hospital beds come equipped with built-in phone charging ports? Families and long-stay patients constantly ask staff for phone chargers, pulling nurses away from care.",
+    unit: "GPU",
+    category: "ebp",
+    tags: ["equipment", "Hill-Rom", "Stryker", "family satisfaction"],
+    votes: 11,
+    dateSubmitted: "2026-09-22",
+    squad: ["D. W., RN"]
+  },
+  {
+    id: "pp107",
+    title: "Dedicated music room required for Music Therapy",
+    description: "Just as Art Therapy has dedicated space, there is a clear institutional need for a dedicated, acoustically-designed Music Room for Music Therapy interventions.",
+    unit: "Dialysis",
+    category: "ebp",
+    tags: ["music therapy", "child life", "healing environment"],
+    votes: 25,
+    dateSubmitted: "2026-09-22",
+    squad: ["L. N., Child Life", "S. M., Music Therapy"]
   }
+];
+
+let items = [];
+let userVotes = new Set();
+
+function init() {
+  // Load votes
+  const savedVotes = localStorage.getItem(USER_VOTES_KEY);
+  if (savedVotes) userVotes = new Set(JSON.parse(savedVotes));
+
+  // Load items
+  const savedItems = localStorage.getItem(STORAGE_KEY);
+  if (savedItems) {
+    items = JSON.parse(savedItems);
+  } else {
+    items = MORNING_PAIN_POINTS;
+    saveData();
+  }
+
   populateUnitFilter();
+  attachEvents();
   render();
 }
- 
-async function save(){
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(data), true);
-  }catch(e){
-    toast("Couldn't save — your change is visible now but may not persist.");
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function saveUserVotes() {
+  localStorage.setItem(USER_VOTES_KEY, JSON.stringify([...userVotes]));
+}
+
+function toast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2200);
+}
+
+function populateUnitFilter() {
+  const sel = document.getElementById("filterUnit");
+  const known = new Set(UNITS);
+  items.forEach(i => known.add(i.unit));
+  [...known].sort().forEach(u => {
+    const opt = document.createElement("option");
+    opt.value = u; opt.textContent = u;
+    sel.appendChild(opt);
+  });
+}
+
+function handleVote(e, id) {
+  e.stopPropagation();
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+
+  if (userVotes.has(id)) {
+    userVotes.delete(id);
+    item.votes = Math.max(0, item.votes - 1);
+    toast("Upvote removed");
+  } else {
+    userVotes.add(id);
+    item.votes += 1;
+    toast("Upvoted! Priority escalated.");
+  }
+
+  saveUserVotes();
+  saveData();
+  render();
+}
+
+function joinSquad(e, id) {
+  e.stopPropagation();
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+
+  const initials = prompt("Enter your name or initials to join this Inquiry Squad:", "K. M., RN");
+  if (initials && initials.trim()) {
+    item.squad.push(initials.trim());
+    saveData();
+    render();
+    toast("Welcome to the Inquiry Squad!");
   }
 }
- 
-function populateUnitFilter(){
-  const sel = document.getElementById('filterUnit');
-  const known = new Set(UNITS);
-  data.forEach(d=>known.add(d.unit));
-  [...known].sort().forEach(u=>{
-    const o=document.createElement('option'); o.value=u; o.textContent=u; sel.appendChild(o);
-  });
-}
- 
-function sharedTagCount(item){
-  let units = new Set();
-  data.forEach(d=>{
-    if(d.id===item.id) return;
-    if(d.tags.some(t=>item.tags.includes(t)) && d.unit!==item.unit) units.add(d.unit);
-  });
-  return units.size;
-}
- 
-function applyFilters(){
-  const q = document.getElementById('search').value.trim().toLowerCase();
-  const cat = document.getElementById('filterCat').value;
-  const unit = document.getElementById('filterUnit').value;
-  const status = document.getElementById('filterStatus').value;
-  const sortBy = document.getElementById('sortBy').value;
- 
-  filtered = data.filter(d=>{
-    if(cat && d.category!==cat) return false;
-    if(unit && d.unit!==unit) return false;
-    if(status && d.status!==status) return false;
-    if(q){
-      const hay = (d.title+" "+d.description+" "+d.unit+" "+d.tags.join(" ")).toLowerCase();
-      if(!hay.includes(q)) return false;
+
+function render() {
+  const search = document.getElementById("searchInput").value.toLowerCase();
+  const lane = document.getElementById("filterLane").value;
+  const unit = document.getElementById("filterUnit").value;
+  const sortBy = document.getElementById("sortBy").value;
+
+  let filtered = items.filter(i => {
+    if (lane && i.category !== lane) return false;
+    if (unit && i.unit !== unit) return false;
+    if (search) {
+      const haystack = (i.title + " " + i.description + " " + i.unit + " " + i.tags.join(" ")).toLowerCase();
+      if (!haystack.includes(search)) return false;
     }
     return true;
   });
- 
-  if(sortBy==="interest"){
-    filtered.sort((a,b)=>b.interested.length - a.interested.length);
+
+  if (sortBy === "votes") {
+    filtered.sort((a, b) => b.votes - a.votes);
   } else {
-    filtered.sort((a,b)=> new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
+    filtered.sort((a, b) => new Date(b.dateSubmitted) - new Date(a.dateSubmitted));
   }
-}
- 
-function render(){
-  applyFilters();
-  const grid = document.getElementById('grid');
-  const empty = document.getElementById('empty');
-  grid.innerHTML="";
-  document.getElementById('stats').innerHTML =
-    `<div><b>${data.length}</b>total logged</div>`+
-    `<div><b>${new Set(data.map(d=>d.unit)).size}</b>units represented</div>`+
-    `<div><b>${data.filter(d=>d.status==='active').length}</b>active projects</div>`;
- 
-  if(filtered.length===0){ empty.style.display='block'; return; }
-  empty.style.display='none';
- 
-  filtered.forEach(item=>{
-    const shared = sharedTagCount(item);
-    const card = document.createElement('div');
-    card.className='card'; card.tabIndex=0; card.setAttribute('role','button');
+
+  // Render Metric Strip
+  const totalVotes = items.reduce((a, b) => a + b.votes, 0);
+  const totalSquadMembers = items.reduce((a, b) => a + b.squad.length, 0);
+  document.getElementById("metricStrip").innerHTML = `
+    <div class="metric-badge"><b>${items.length}</b><span>Pain Points Logged</span></div>
+    <div class="metric-badge"><b>${totalVotes}</b><span>Staff Votes</span></div>
+    <div class="metric-badge"><b>${totalSquadMembers}</b><span>Squad Members</span></div>
+  `;
+
+  // Render Cards Grid
+  const grid = document.getElementById("cardGrid");
+  grid.innerHTML = "";
+
+  filtered.forEach(item => {
+    const isVoted = userVotes.has(item.id);
+    const card = document.createElement("div");
+    card.className = "card";
     card.innerHTML = `
-      <div class="tab ${item.category}"></div>
-      <div class="card-top">
-        <span class="cat-label ${item.category}">${CAT_LABEL[item.category]}</span>
-        <span class="unit">${item.unit}</span>
+      <div class="upvote-pillar">
+        <button class="upvote-btn ${isVoted ? 'active' : ''}" onclick="handleVote(event, '${item.id}')">▲</button>
+        <span class="upvote-count ${isVoted ? 'active' : ''}">${item.votes}</span>
       </div>
-      <h3>${escapeHtml(item.title)}</h3>
-      <p class="desc">${escapeHtml(item.description)}</p>
-      <div class="tags">${item.tags.map(t=>`<span class="tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
-      <div class="card-bottom">
-        <span class="status-badge status-${item.status}">${STATUS_LABEL[item.status]}</span>
-        <span class="interest">★ ${item.interested.length} interested</span>
+      <div class="card-main">
+        <div class="card-top">
+          <span class="lane-pill ${item.category}">${LANES[item.category]}</span>
+          <span class="unit-badge">${item.unit}</span>
+        </div>
+        <h3>${escapeHtml(item.title)}</h3>
+        <p>${escapeHtml(item.description)}</p>
+        <div class="squad-strip">
+          <div class="squad-avatars">
+            ${item.squad.map(m => `<div class="avatar-bubble" title="${escapeHtml(m)}">${m.substring(0, 2).toUpperCase()}</div>`).join('')}
+          </div>
+          <button class="join-squad-btn" onclick="joinSquad(event, '${item.id}')">+ Join Squad</button>
+        </div>
       </div>
-      ${shared>0 ? `<div class="link-note">🔗 similar pain point flagged on ${shared} other unit${shared>1?'s':''}</div>` : ''}
     `;
-    card.addEventListener('click', ()=>openDetail(item.id));
-    card.addEventListener('keypress', e=>{ if(e.key==='Enter') openDetail(item.id); });
+    card.onclick = () => openDetailModal(item);
     grid.appendChild(card);
   });
 }
- 
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
- 
-function openDetail(id){
-  const item = data.find(d=>d.id===id);
-  const overlay = document.createElement('div');
-  overlay.className='overlay';
-  overlay.innerHTML = `
-    <div class="modal">
-      <button class="close-x" aria-label="Close">✕</button>
-      <span class="cat-label ${item.category}">${CAT_LABEL[item.category]}</span>
-      <h2>${escapeHtml(item.title)}</h2>
-      <div class="unit">${item.unit} · logged ${item.dateSubmitted}${item.submittedBy? ' · '+escapeHtml(item.submittedBy):''}</div>
-      <p style="line-height:1.6;font-size:14px;margin-top:14px;">${escapeHtml(item.description)}</p>
-      <div class="tags">${item.tags.map(t=>`<span class="tag-pill">${escapeHtml(t)}</span>`).join('')}</div>
-      <div class="field" style="margin-top:16px;">
-        <label>Status</label>
-        <select id="statusEdit">
-          ${Object.entries(STATUS_LABEL).map(([k,v])=>`<option value="${k}" ${k===item.status?'selected':''}>${v}</option>`).join('')}
-        </select>
-      </div>
-      <div class="field">
-        <label>Who's interested in collaborating (${item.interested.length})</label>
-        <div class="interested-list">${item.interested.map(n=>`<span class="avatar">${escapeHtml(n)}</span>`).join('') || '<span style="color:var(--ink-faint);font-size:12.5px;">No one yet — be the first.</span>'}</div>
-      </div>
-      <div class="form-actions">
-        <input id="joinName" placeholder="Your initials or unit" style="max-width:180px;">
-        <button class="btn" id="joinBtn">I'm interested</button>
+
+function openDetailModal(item) {
+  const overlay = document.getElementById("modalOverlay");
+  const inner = document.getElementById("modalInnerBody");
+  
+  inner.innerHTML = `
+    <span class="lane-pill ${item.category}">${LANES[item.category]}</span>
+    <h2 class="sheet-title" style="margin-top:8px;">${escapeHtml(item.title)}</h2>
+    <div style="font-size:12px; color:var(--text-faint); margin-bottom:12px; font-family:var(--font-mono);">
+      Unit: ${item.unit} · Logged ${item.dateSubmitted}
+    </div>
+    <p style="font-size:14.5px; color:var(--text-secondary); line-height:1.6; margin-bottom:20px;">
+      ${escapeHtml(item.description)}
+    </p>
+    <div style="margin-bottom:20px;">
+      <label style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--text-faint); display:block; margin-bottom:8px;">Active Squad Members (${item.squad.length})</label>
+      <div style="display:flex; flex-wrap:wrap; gap:6px;">
+        ${item.squad.map(s => `<span style="background:var(--brand-teal-light); color:var(--brand-teal); padding:4px 10px; border-radius:12px; font-size:12px; font-weight:700;">${escapeHtml(s)}</span>`).join('')}
       </div>
     </div>
+    <button class="btn-submit" onclick="closeModal()">Close Details</button>
   `;
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
-  overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
-  overlay.querySelector('#statusEdit').addEventListener('change', async e=>{
-    item.status = e.target.value; await save(); render(); toast("Status updated.");
-  });
-  overlay.querySelector('#joinBtn').addEventListener('click', async ()=>{
-    const name = overlay.querySelector('#joinName').value.trim() || 'Anonymous';
-    item.interested.push(name);
-    await save();
-    overlay.remove();
-    render();
-    toast("Added — thanks for raising your hand.");
-  });
+  
+  overlay.classList.add("active");
 }
- 
-function openSubmitForm(){
-  const overlay = document.createElement('div');
-  overlay.className='overlay';
-  overlay.innerHTML = `
-    <div class="modal">
-      <button class="close-x" aria-label="Close">✕</button>
-      <h2>Log a pain point</h2>
-      <p style="color:var(--ink-soft);font-size:13px;margin-top:-4px;">A recurring frustration, a "why do we do it this way," a question you'd chase if you had time. That's it — no proposal needed yet.</p>
-      <div class="field"><label>What's the pain point?</label><input id="f-title" placeholder="e.g. Inconsistent bedside handoff format"></div>
-      <div class="field"><label>Tell us more</label><textarea id="f-desc" placeholder="What's happening, how often, what you've noticed…"></textarea></div>
-      <div class="field"><label>Your unit</label>
-        <select id="f-unit">${UNITS.map(u=>`<option value="${u}">${u}</option>`).join('')}</select>
-      </div>
-      <div class="field"><label>Which lane does this feel like?</label>
-        <div class="radio-row">
-          <label><input type="radio" name="cat" value="ebp" checked> EBP</label>
-          <label><input type="radio" name="cat" value="qi"> QI</label>
-          <label><input type="radio" name="cat" value="research"> Research</label>
-        </div>
-      </div>
-      <div class="field"><label>Tags (comma separated)</label><input id="f-tags" placeholder="e.g. handoff, documentation, safety"></div>
-      <div class="field"><label>Your name / unit (optional)</label><input id="f-name" placeholder="Leave blank to stay anonymous"></div>
-      <div class="form-actions">
-        <button class="btn ghost" id="cancelBtn">Cancel</button>
-        <button class="btn" id="submitBtn">Add to the ledger</button>
-      </div>
+
+function openLogModal() {
+  const overlay = document.getElementById("modalOverlay");
+  const inner = document.getElementById("modalInnerBody");
+
+  inner.innerHTML = `
+    <h2 class="sheet-title">Log a New Pain Point</h2>
+    <div class="form-group">
+      <label>Title / Concise Frustration</label>
+      <input type="text" id="logTitle" placeholder="e.g. Equipment transport bottleneck">
+    </div>
+    <div class="form-group">
+      <label>Description & Clinical Details</label>
+      <textarea id="logDesc" placeholder="Describe the workflow friction or safety issue..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Unit / Area</label>
+      <select id="logUnit">
+        ${UNITS.map(u => `<option value="${u}">${u}</option>`).join('')}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Inquiry Lane</label>
+      <select id="logLane">
+        <option value="ebp">Evidence-Based Practice (EBP)</option>
+        <option value="qi">Quality Improvement (QI)</option>
+        <option value="research">Research</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button class="btn-submit" onclick="submitNewPainPoint()">Submit to Ledger</button>
     </div>
   `;
-  document.body.appendChild(overlay);
-  overlay.addEventListener('click', e=>{ if(e.target===overlay) overlay.remove(); });
-  overlay.querySelector('.close-x').addEventListener('click', ()=>overlay.remove());
-  overlay.querySelector('#cancelBtn').addEventListener('click', ()=>overlay.remove());
-  overlay.querySelector('#submitBtn').addEventListener('click', async ()=>{
-    const title = overlay.querySelector('#f-title').value.trim();
-    if(!title){ toast("Give it a short title first."); return; }
-    const desc = overlay.querySelector('#f-desc').value.trim();
-    const unit = overlay.querySelector('#f-unit').value;
-    const cat = overlay.querySelector('input[name="cat"]:checked').value;
-    const tags = overlay.querySelector('#f-tags').value.split(',').map(t=>t.trim()).filter(Boolean);
-    const name = overlay.querySelector('#f-name').value.trim();
-    const newItem = {
-      id: 'pp'+Date.now(),
-      title, description: desc || "No further detail added yet.",
-      unit, category: cat, status: 'new', tags,
-      submittedBy: name, dateSubmitted: new Date().toISOString().slice(0,10),
-      interested: []
-    };
-    data.unshift(newItem);
-    await save();
-    populateUnitFilter();
-    overlay.remove();
+
+  overlay.classList.add("active");
+}
+
+function submitNewPainPoint() {
+  const title = document.getElementById("logTitle").value.trim();
+  if (!title) { toast("Please give a short title"); return; }
+
+  const newItem = {
+    id: "pp_" + Date.now(),
+    title: title,
+    description: document.getElementById("logDesc").value.trim() || "No detailed description added.",
+    unit: document.getElementById("logUnit").value,
+    category: document.getElementById("logLane").value,
+    tags: ["bedside"],
+    votes: 1,
+    dateSubmitted: new Date().toISOString().slice(0, 10),
+    squad: ["You"]
+  };
+
+  items.unshift(newItem);
+  userVotes.add(newItem.id);
+  saveUserVotes();
+  saveData();
+  render();
+  closeModal();
+  toast("Added & auto-upvoted!");
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").classList.remove("active");
+}
+
+function exportRepositoryJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(items, null, 2));
+  const dlAnchor = document.createElement('a');
+  dlAnchor.setAttribute("href", dataStr);
+  dlAnchor.setAttribute("download", `clinical_inquiry_ledger_${new Date().toISOString().slice(0,10)}.json`);
+  document.body.appendChild(dlAnchor);
+  dlAnchor.click();
+  dlAnchor.remove();
+  toast("Exported JSON repository!");
+}
+
+function switchTab(tab) {
+  if (tab === 'squads') {
+    toast("Showing cross-unit Inquiry Squads view");
+  } else {
     render();
-    toast("Added to the ledger.");
+  }
+}
+
+function attachEvents() {
+  document.getElementById("searchInput").addEventListener("input", render);
+  document.getElementById("filterLane").addEventListener("change", render);
+  document.getElementById("filterUnit").addEventListener("change", render);
+  document.getElementById("sortBy").addEventListener("change", render);
+  document.getElementById("openLogBtn").addEventListener("click", openLogModal);
+  document.getElementById("modalOverlay").addEventListener("click", (e) => {
+    if (e.target.id === "modalOverlay") closeModal();
   });
 }
- 
-document.getElementById('search').addEventListener('input', render);
-document.getElementById('filterCat').addEventListener('change', render);
-document.getElementById('filterUnit').addEventListener('change', render);
-document.getElementById('filterStatus').addEventListener('change', render);
-document.getElementById('sortBy').addEventListener('change', render);
-document.getElementById('openSubmit').addEventListener('click', openSubmitForm);
- 
-load();
+
+window.onload = init;
 </script>
 </body>
 </html>
